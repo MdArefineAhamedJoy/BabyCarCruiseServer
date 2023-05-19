@@ -45,7 +45,11 @@ async function run() {
     res.send(result);
   });
 
-
+  app.post("/category", async (req, res) => {
+    const items = req.body;
+    const result = await BabyCarCruiseCollation.insertOne(items);
+    res.send(result);
+  });
 
 
   app.put("category/:id", async (req, res) => {
