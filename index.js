@@ -45,6 +45,13 @@ async function run() {
     res.send(result);
   });
 
+  app.get("/categoryDetails/:id", async (req, res) => {
+    const id = req.params.id; 
+    const query = { _id: new ObjectId(id) };
+    const result = await BabyCarCruiseCollation.findOne(query)
+    res.send(result)
+  });
+
   app.post("/category", async (req, res) => {
     const items = req.body;
     const result = await BabyCarCruiseCollation.insertOne(items);
@@ -52,13 +59,9 @@ async function run() {
   });
 
 
-  app.put("category/:id", async (req, res) => {
+  app.delete("/deletes/:id", async (req, res) => {
     const id = req.params.id;
-    const query = { _id: new ObjectId(id) };
-  });
-
-  app.delete("/:id", async (req, res) => {
-    const id = req.params.id;
+    console.log(id)
     const query = { _id: new ObjectId(id) };
     const result = await BabyCarCruiseCollation.deleteOne(query);
     res.send(result);
