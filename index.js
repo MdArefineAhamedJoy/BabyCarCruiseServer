@@ -46,10 +46,10 @@ async function run() {
   });
 
   app.get("/categoryDetails/:id", async (req, res) => {
-    const id = req.params.id; 
+    const id = req.params.id;
     const query = { _id: new ObjectId(id) };
-    const result = await BabyCarCruiseCollation.findOne(query)
-    res.send(result)
+    const result = await BabyCarCruiseCollation.findOne(query);
+    res.send(result);
   });
 
   app.post("/category", async (req, res) => {
@@ -58,10 +58,33 @@ async function run() {
     res.send(result);
   });
 
+  app.get("/update/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await BabyCarCruiseCollation.findOne(query);
+    res.send(result);
+  });
+
+  app.put("/update/:id", async (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    const options = { upsert: true };
+    const update = req.body;
+    const query = { _id: new ObjectId(id) };
+    const updateDoc = {
+      $set: {
+        price: update.name,
+        description: update.description,
+        availableQuantity: update.availableQuantity,
+      },
+    };
+    const result = await BabyCarCruiseCollation.updateOne(query, updateDoc,options);
+    res.send(result);
+  });
 
   app.delete("/deletes/:id", async (req, res) => {
     const id = req.params.id;
-    console.log(id)
+    console.log(id);
     const query = { _id: new ObjectId(id) };
     const result = await BabyCarCruiseCollation.deleteOne(query);
     res.send(result);
