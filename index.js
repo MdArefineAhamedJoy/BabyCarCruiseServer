@@ -29,6 +29,14 @@ async function run() {
   const indexKey = {toysname : 1}
   const indexOption = {name : "toysName"}
 
+  const result = await BabyCarCruiseCollation.createIndex(indexKey,indexOption)
+
+  app.get('/searchByName/:text', async(req , res)=> {
+    const textSearch = req.params.text ;
+    const query = { toysname: { $regex: textSearch , $options:'i'} }
+    const result = await BabyCarCruiseCollation.find(query).toArray()
+    res.send(result)
+  })
 
 
   app.get("/allCategories", async (req, res) => {
