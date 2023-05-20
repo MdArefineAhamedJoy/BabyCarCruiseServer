@@ -25,6 +25,12 @@ async function run() {
     .db("babyCarCollation")
     .collection("babyCar");
 
+
+  const indexKey = {toysname : 1}
+  const indexOption = {name : "toysName"}
+
+
+
   app.get("/allCategories", async (req, res) => {
     const query = {};
     const result = await BabyCarCruiseCollation.find(query).toArray();
@@ -51,7 +57,7 @@ async function run() {
     const result = await BabyCarCruiseCollation.findOne(query);
     res.send(result);
   });
-
+ 
   app.post("/category", async (req, res) => {
     const items = req.body;
     const result = await BabyCarCruiseCollation.insertOne(items);
