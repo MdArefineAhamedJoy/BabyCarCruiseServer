@@ -5,12 +5,11 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-
-const corsOptions ={
-  origin:'*', 
-  credentials:true,
-  optionSuccessStatus:200,
-}
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
 
 //
 app.use(cors(corsOptions));
@@ -25,76 +24,81 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
-  useNewUrlParser: true ,
+  useNewUrlParser: true,
   useUnifiedTopology: true,
   maxPoolSize: 14,
 });
 
 async function run() {
-
-
-
-
-
   try {
     const BabyCarCruiseCollation = client
-    .db("babyCarCollation")
-    .collection("babyCar");
+      .db("babyCarCollation")
+      .collection("babyCar");
 
-    app.get('/searchByName/:text', async(req , res)=> {
-      const textSearch = req.params.text ;
+    app.get("/searchByName/:text", async (req, res) => {
+      const textSearch = req.params.text;
       // const query =  { $regex: textSearch , $options:'i'}
-      const result = await BabyCarCruiseCollation.find({toysname:{$regex:textSearch, $options: 'i'}}).toArray()
-      res.send(result)
-    })
-  
+      const result = await BabyCarCruiseCollation.find({
+        toysname: { $regex: textSearch, $options: "i" },
+      }).toArray();
+      res.send(result);
+    });
+
     app.get("/allCategories", async (req, res) => {
       const query = {};
       const result = await BabyCarCruiseCollation.find(query).toArray();
       res.send(result);
     });
-  
+
     app.get("/category/:categoryName", async (req, res) => {
       const category = req.params.categoryName;
       const query = { categoryName: category };
       const result = await BabyCarCruiseCollation.find(query).toArray();
       res.send(result);
     });
-  
+
     app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
+      const queryParam = parseInt(req.query.shorts);
       const query = { email: email };
-      const result = await BabyCarCruiseCollation.find(query).toArray();
-      res.send(result);
+      if (queryParam === 1) {
+        const result = await BabyCarCruiseCollation.find(query)
+          .sort({ price: 1 })
+          .toArray();
+        res.send(result);
+      } else if (queryParam === -1) {
+        const result = await BabyCarCruiseCollation.find(query)
+          .sort({ price: -1 })
+          .toArray();
+        res.send(result);
+      } else {
+        const result = await BabyCarCruiseCollation.find(query).toArray();
+        res.send(result);
+      }
     });
-  
-    app.get("/shortData/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const result = await BabyCarCruiseCollation.find(query).sort({ price: 1 }).toArray();
-      res.send(result);
-    });
-  
+
+
+
     app.get("/categoryDetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await BabyCarCruiseCollation.findOne(query);
       res.send(result);
     });
-   
+
     app.post("/category", async (req, res) => {
       const items = req.body;
       const result = await BabyCarCruiseCollation.insertOne(items);
       res.send(result);
     });
-  
+
     app.get("/update/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await BabyCarCruiseCollation.findOne(query);
       res.send(result);
     });
-  
+
     app.put("/update/:id", async (req, res) => {
       const id = req.params.id;
       const options = { upsert: true };
@@ -102,15 +106,19 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
-          price: update.name,
+          price: update.price,
           description: update.description,
           availableQuantity: update.availableQuantity,
         },
       };
-      const result = await BabyCarCruiseCollation.updateOne(query, updateDoc,options);
+      const result = await BabyCarCruiseCollation.updateOne(
+        query,
+        updateDoc,
+        options
+      );
       res.send(result);
     });
-  
+
     app.delete("/deletes/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id);
